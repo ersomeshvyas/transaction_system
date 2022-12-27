@@ -7,6 +7,7 @@ import sqlite3
 from flask import Flask, render_template, request, json
 from flask_redis import FlaskRedis
 import uuid
+import datetime
 
 app = Flask(__name__)
 redis_client = FlaskRedis(app)
@@ -39,7 +40,7 @@ def transfer():
     data = queue_consumer(transaction_id, data)
     # return message that transaction is queued
     response_obj = {
-        "id": "transaction_id",
+        "id": transaction_id,
         "from": {
             "id": from_account,
             "balance": data['after_debit_amount']
@@ -49,7 +50,7 @@ def transfer():
             "balance": data['after_credit_amount']
         },
         "transfered": amount,
-        "created_datetime": "transaction created time"
+        "created_datetime": datetime.datetime.now()
     }
     response = app.response_class(
         response=json.dumps(response_obj),
